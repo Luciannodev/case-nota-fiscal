@@ -9,7 +9,19 @@ import br.com.itau.geradornotafiscal.model.Pedido;
 import br.com.itau.geradornotafiscal.model.Regiao;
 import br.com.itau.geradornotafiscal.model.RegimeTributacaoPJ;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
+import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
+import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
+import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
 import br.com.itau.geradornotafiscal.service.impl.GeradorNotaFiscalServiceImpl;
+import br.com.itau.geradornotafiscal.service.strategy.CentroOesteFreteStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.LucroPresumidoAliquotaStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.LucroRealAliquotaStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.NordesteFreteStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.NorteFreteStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.PessoaFisicaAliquotaStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.SimplesNacionalAliquotaStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.SudesteFreteStrategy;
+import br.com.itau.geradornotafiscal.service.strategy.SulFreteStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -22,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GeradorNotaFiscalServiceImplTest {
 
-    private final GeradorNotaFiscalServiceImpl geradorNotaFiscalService = new GeradorNotaFiscalServiceImpl();
+    private final GeradorNotaFiscalServiceImpl geradorNotaFiscalService = criarGeradorNotaFiscalService();
 
     @ParameterizedTest(name = "pessoa fisica: pedido de {0} gera tributo {1} e total {2}")
     @MethodSource("cenariosPessoaFisica")
@@ -140,5 +152,22 @@ class GeradorNotaFiscalServiceImplTest {
         item.setValorUnitario(valorUnitario);
         item.setQuantidade(quantidade);
         return item;
+    }
+
+    private static GeradorNotaFiscalServiceImpl criarGeradorNotaFiscalService() {
+        CalculadoraTributos calculadoraTributos = new CalculadoraTributos(
+                List.of(
+                        new PessoaFisicaAliquotaStrategy(),
+                        new SimplesNacionalAliquotaStrategy(),
+                        new LucroRealAliquotaStrategy(),
+                        new LucroPresumidoAliquotaStrategy()),
+                new CalculadoraAliquotaProduto());
+        CalculadoraFrete calculadoraFrete = new CalculadoraFrete(List.of(
+                new NorteFreteStrategy(),
+                new NordesteFreteStrategy(),
+                new CentroOesteFreteStrategy(),
+                new SudesteFreteStrategy(),
+                new SulFreteStrategy()));
+        return new GeradorNotaFiscalServiceImpl(calculadoraTributos, calculadoraFrete);
     }
 }
