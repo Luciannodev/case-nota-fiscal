@@ -7,10 +7,7 @@ import br.com.itau.geradornotafiscal.model.Item;
 import br.com.itau.geradornotafiscal.model.Pedido;
 import br.com.itau.geradornotafiscal.model.Regiao;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
-import br.com.itau.geradornotafiscal.port.out.EntregaIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.EstoqueIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.FinanceiroIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.RegistroIntegrationPort;
+import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
 import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
 import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
@@ -27,25 +24,16 @@ import static org.mockito.Mockito.verify;
 class GeradorNotaFiscalHexagonalTest {
 
     @Test
-    void deveAcionarTodasAsPortasDeSaidaAoGerarNota() {
-        EstoqueIntegrationPort estoque = mock(EstoqueIntegrationPort.class);
-        RegistroIntegrationPort registro = mock(RegistroIntegrationPort.class);
-        EntregaIntegrationPort entrega = mock(EntregaIntegrationPort.class);
-        FinanceiroIntegrationPort financeiro = mock(FinanceiroIntegrationPort.class);
+    void devePublicarNotaGeradaPelaPortaDeSaida() {
+        PublicarIntegracoesNotaFiscalPort publicador = mock(PublicarIntegracoesNotaFiscalPort.class);
         GeradorNotaFiscalServiceImpl service = new GeradorNotaFiscalServiceImpl(
                 new CalculadoraTributos(List.of(new PessoaFisicaAliquotaStrategy()), new CalculadoraAliquotaProduto()),
                 new CalculadoraFrete(List.of(new SudesteFreteStrategy())),
-                estoque,
-                registro,
-                entrega,
-                financeiro);
+                publicador);
 
         service.gerarNotaFiscal(pedido());
 
-        verify(estoque).baixarEstoque(any());
-        verify(registro).registrar(any());
-        verify(entrega).agendarEntrega(any());
-        verify(financeiro).enviarContasAReceber(any());
+        verify(publicador).publicar(any());
     }
 
     private Pedido pedido() {

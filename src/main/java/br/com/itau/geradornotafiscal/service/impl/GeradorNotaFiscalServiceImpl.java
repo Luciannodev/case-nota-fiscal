@@ -4,10 +4,7 @@ import br.com.itau.geradornotafiscal.model.*;
 import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
 import br.com.itau.geradornotafiscal.port.in.GerarNotaFiscalUseCase;
-import br.com.itau.geradornotafiscal.port.out.EntregaIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.EstoqueIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.FinanceiroIntegrationPort;
-import br.com.itau.geradornotafiscal.port.out.RegistroIntegrationPort;
+import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,23 +16,14 @@ public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
 
 	private final CalculadoraTributos calculadoraTributos;
 	private final CalculadoraFrete calculadoraFrete;
-	private final EstoqueIntegrationPort estoqueIntegrationPort;
-	private final RegistroIntegrationPort registroIntegrationPort;
-	private final EntregaIntegrationPort entregaIntegrationPort;
-	private final FinanceiroIntegrationPort financeiroIntegrationPort;
+	private final PublicarIntegracoesNotaFiscalPort integracoesNotaFiscal;
 
 	public GeradorNotaFiscalServiceImpl(CalculadoraTributos calculadoraTributos,
 									 CalculadoraFrete calculadoraFrete,
-									 EstoqueIntegrationPort estoqueIntegrationPort,
-									 RegistroIntegrationPort registroIntegrationPort,
-									 EntregaIntegrationPort entregaIntegrationPort,
-									 FinanceiroIntegrationPort financeiroIntegrationPort) {
+									 PublicarIntegracoesNotaFiscalPort integracoesNotaFiscal) {
 		this.calculadoraTributos = calculadoraTributos;
 		this.calculadoraFrete = calculadoraFrete;
-		this.estoqueIntegrationPort = estoqueIntegrationPort;
-		this.registroIntegrationPort = registroIntegrationPort;
-		this.entregaIntegrationPort = entregaIntegrationPort;
-		this.financeiroIntegrationPort = financeiroIntegrationPort;
+		this.integracoesNotaFiscal = integracoesNotaFiscal;
 	}
 
 	@Override
@@ -61,10 +49,7 @@ public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
 				.destinatario(pedido.getDestinatario())
 				.build();
 
-		estoqueIntegrationPort.baixarEstoque(notaFiscal);
-		registroIntegrationPort.registrar(notaFiscal);
-		entregaIntegrationPort.agendarEntrega(notaFiscal);
-		financeiroIntegrationPort.enviarContasAReceber(notaFiscal);
+		integracoesNotaFiscal.publicar(notaFiscal);
 
 		return notaFiscal;
 	}

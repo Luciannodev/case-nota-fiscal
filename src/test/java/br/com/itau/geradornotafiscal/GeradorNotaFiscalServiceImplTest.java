@@ -171,9 +171,6 @@ class GeradorNotaFiscalServiceImplTest {
         return new GeradorNotaFiscalServiceImpl(
                 calculadoraTributos,
                 calculadoraFrete,
-                notaFiscal -> { },
-                notaFiscal -> { },
-                notaFiscal -> { },
                 notaFiscal -> { });
     }
 }
