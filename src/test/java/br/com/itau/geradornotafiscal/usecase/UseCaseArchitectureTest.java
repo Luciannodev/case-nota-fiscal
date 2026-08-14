@@ -1,4 +1,4 @@
-package br.com.itau.geradornotafiscal.core;
+package br.com.itau.geradornotafiscal.usecase;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,27 +9,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CoreArchitectureTest {
+class UseCaseArchitectureTest {
 
-    private static final Path CORE = Path.of(
-            "src/main/java/br/com/itau/geradornotafiscal/core");
+    private static final Path USE_CASE = Path.of(
+            "src/main/java/br/com/itau/geradornotafiscal/usecase");
     private static final List<String> DEPENDENCIAS_PROIBIDAS = List.of(
             "import org.springframework.",
             "import br.com.itau.geradornotafiscal.adapter.",
-            "import br.com.itau.geradornotafiscal.config.",
-            "import br.com.itau.geradornotafiscal.usecase.",
-            "import br.com.itau.geradornotafiscal.observability.",
-            "import br.com.itau.geradornotafiscal.port.");
+            "import br.com.itau.geradornotafiscal.config.");
 
     @Test
-    void coreNaoDeveDependerDeFrameworkConfiguracaoOuAdapters() throws IOException {
-        try (var arquivos = Files.walk(CORE)) {
+    void useCaseNaoDeveDependerDeSpringConfiguracaoOuAdapters() throws IOException {
+        try (var arquivos = Files.walk(USE_CASE)) {
             List<String> violacoes = arquivos
                     .filter(arquivo -> arquivo.toString().endsWith(".java"))
                     .flatMap(arquivo -> dependenciasProibidas(arquivo).stream())
                     .toList();
 
-            assertTrue(violacoes.isEmpty(), () -> "Dependências proibidas no core: " + violacoes);
+            assertTrue(violacoes.isEmpty(), () -> "Dependências proibidas no use case: " + violacoes);
         }
     }
 

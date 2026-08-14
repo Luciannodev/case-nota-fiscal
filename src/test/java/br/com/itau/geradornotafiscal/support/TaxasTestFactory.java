@@ -1,7 +1,7 @@
 package br.com.itau.geradornotafiscal.support;
 
 import br.com.itau.geradornotafiscal.config.TaxasProperties;
-import br.com.itau.geradornotafiscal.core.strategy.FaixasAliquota;
+import br.com.itau.geradornotafiscal.usecase.strategy.FaixasAliquota;
 import java.math.BigDecimal;
 
 public final class TaxasTestFactory {

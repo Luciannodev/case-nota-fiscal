@@ -11,16 +11,16 @@ A primeira separação hexagonal isolou as integrações por portas e adapters, 
 
 Organizar a aplicação a partir do núcleo de negócio:
 
-- `core/model` contém os modelos do domínio;
-- `core/usecase` contém a porta de entrada e a implementação de cada caso de uso;
-- `core/usecase/calculo` contém operações de negócio usadas pelo caso de uso;
-- `core/strategy` contém as estratégias tributárias e de frete;
+- `core/model` permanece como núcleo do domínio;
+- `usecase` contém a porta de entrada e a implementação de cada caso de uso;
+- `usecase/calculo` contém operações de negócio usadas pelo caso de uso;
+- `usecase/strategy` contém as estratégias tributárias e de frete;
 - `port/out` define os contratos que o núcleo exige das integrações;
 - `adapter/in` recebe requisições e chama casos de uso;
 - `adapter/out` implementa as integrações externas;
-- `config/CoreConfig` é o composition root que converte propriedades externas em valores do core e monta as dependências.
+- `config/UseCaseConfig` é o composition root que converte propriedades externas em valores da aplicação e monta as dependências.
 
-O core não recebe `TaxasProperties`: recebe `BigDecimal` e `FaixasAliquota`, tipos independentes do framework. Um teste arquitetural impede imports de Spring, configuração ou adapters dentro de `core`.
+O core não recebe `TaxasProperties` nem conhece casos de uso, observabilidade, ports ou adapters. A camada `usecase` recebe `BigDecimal` e `FaixasAliquota`, tipos independentes do Spring. Testes arquiteturais protegem a direção dessas dependências.
 
 ## Consequências
 
@@ -28,4 +28,4 @@ O core não recebe `TaxasProperties`: recebe `BigDecimal` e `FaixasAliquota`, ti
 - Modelos e regras podem ser testados sem iniciar o Spring.
 - A configuração por variável de ambiente permanece na borda da aplicação.
 - Adapters e mecanismos de entrega podem mudar sem alterar o caso de uso.
-- A composição explícita adiciona código em `CoreConfig`, em troca de dependências visíveis e controladas.
+- A composição explícita adiciona código em `UseCaseConfig`, em troca de dependências visíveis e controladas.

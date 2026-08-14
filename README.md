@@ -135,8 +135,10 @@ O principal objetivo é demonstrar **como você pensa, investiga problemas, toma
 ## Solução implementada
 
 - regras tributárias e frete isolados com Strategy;
-- core organizado por modelos, casos de uso e estratégias, sem dependência do Spring;
+- core restrito aos modelos do domínio, sem dependência do Spring ou dos adapters;
+- camada `usecase` separada do core, contendo cálculos, validações e Strategies;
 - portas e adapters para desacoplar os casos de uso das integrações;
+- tratamento padronizado para valores inválidos, JSON malformado e regras inexistentes;
 - integrações assíncronas e paralelas em virtual threads, preservando as latências simuladas;
 - `X-Correlation-ID` propagado do request às integrações;
 - logs temporizados por request, cálculo e chamada externa;

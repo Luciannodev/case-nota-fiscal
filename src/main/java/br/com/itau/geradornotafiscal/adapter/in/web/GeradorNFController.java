@@ -2,9 +2,8 @@ package br.com.itau.geradornotafiscal.adapter.in.web;
 
 import br.com.itau.geradornotafiscal.core.model.NotaFiscal;
 import br.com.itau.geradornotafiscal.core.model.Pedido;
-import br.com.itau.geradornotafiscal.core.usecase.GerarNotaFiscalUseCase;
+import br.com.itau.geradornotafiscal.usecase.GerarNotaFiscalUseCase;
 import br.com.itau.geradornotafiscal.observability.CorrelationIdContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +22,8 @@ public class GeradorNFController {
 
 	@PostMapping("/gerarNotaFiscal")
 	public ResponseEntity<NotaFiscal> gerarNotaFiscal(@RequestBody Pedido pedido) {
-		// Lógica de processamento do pedido
-		// Aqui você pode realizar as operações desejadas com o objeto Pedido
-
-		// Exemplo de retorno
 		NotaFiscal notaFiscal = gerarNotaFiscalUseCase.gerarNotaFiscal(pedido, CorrelationIdContext.atual());
-		return new ResponseEntity<>(notaFiscal, HttpStatus.OK);
+		return ResponseEntity.ok(notaFiscal);
 	}
 	
 }

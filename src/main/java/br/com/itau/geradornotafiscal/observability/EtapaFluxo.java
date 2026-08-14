@@ -2,6 +2,7 @@ package br.com.itau.geradornotafiscal.observability;
 
 public enum EtapaFluxo {
     GERACAO_NOTA_FISCAL("nota-fiscal.total", "Processando a geração da nota fiscal"),
+    VALIDACAO_PEDIDO("validacao.pedido", "Validando os dados e valores do pedido"),
     CALCULO_TRIBUTOS("calculo.tributos", "Calculando os tributos de cada item"),
     SOMA_TOTAL_ITENS("calculo.total-itens", "Somando produtos, quantidades e tributos"),
     CALCULO_FRETE("calculo.frete", "Calculando o frete conforme a região de entrega"),

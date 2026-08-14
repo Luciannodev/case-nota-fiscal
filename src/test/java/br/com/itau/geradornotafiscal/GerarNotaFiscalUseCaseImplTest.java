@@ -1,6 +1,7 @@
 package br.com.itau.geradornotafiscal;
 
 import br.com.itau.geradornotafiscal.core.model.Destinatario;
+import br.com.itau.geradornotafiscal.core.model.Documento;
 import br.com.itau.geradornotafiscal.core.model.Endereco;
 import br.com.itau.geradornotafiscal.core.model.Finalidade;
 import br.com.itau.geradornotafiscal.core.model.Item;
@@ -9,27 +10,30 @@ import br.com.itau.geradornotafiscal.core.model.Pedido;
 import br.com.itau.geradornotafiscal.core.model.Regiao;
 import br.com.itau.geradornotafiscal.core.model.RegimeTributacaoPJ;
 import br.com.itau.geradornotafiscal.core.model.TipoPessoa;
-import br.com.itau.geradornotafiscal.core.usecase.calculo.CalculadoraAliquotaProduto;
-import br.com.itau.geradornotafiscal.core.usecase.calculo.CalculadoraFrete;
-import br.com.itau.geradornotafiscal.core.usecase.calculo.CalculadoraTributos;
-import br.com.itau.geradornotafiscal.core.usecase.GerarNotaFiscalUseCaseImpl;
+import br.com.itau.geradornotafiscal.core.model.TipoDocumento;
+import br.com.itau.geradornotafiscal.usecase.validation.PedidoValidator;
+import br.com.itau.geradornotafiscal.usecase.calculo.CalculadoraAliquotaProduto;
+import br.com.itau.geradornotafiscal.usecase.calculo.CalculadoraFrete;
+import br.com.itau.geradornotafiscal.usecase.calculo.CalculadoraTributos;
+import br.com.itau.geradornotafiscal.usecase.GerarNotaFiscalUseCaseImpl;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.config.TaxasProperties;
-import br.com.itau.geradornotafiscal.core.strategy.CentroOesteFreteStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.LucroPresumidoAliquotaStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.LucroRealAliquotaStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.NordesteFreteStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.NorteFreteStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.PessoaFisicaAliquotaStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.SimplesNacionalAliquotaStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.SudesteFreteStrategy;
-import br.com.itau.geradornotafiscal.core.strategy.SulFreteStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.CentroOesteFreteStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.LucroPresumidoAliquotaStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.LucroRealAliquotaStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.NordesteFreteStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.NorteFreteStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.PessoaFisicaAliquotaStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.SimplesNacionalAliquotaStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.SudesteFreteStrategy;
+import br.com.itau.geradornotafiscal.usecase.strategy.SulFreteStrategy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 import java.math.BigDecimal;
 
@@ -142,14 +146,20 @@ class GerarNotaFiscalUseCaseImplTest {
     private static Pedido pedido(TipoPessoa tipoPessoa, RegimeTributacaoPJ regime, double valorTotalItens,
                                  List<Item> itens, Regiao regiao) {
         Destinatario destinatario = new Destinatario();
+        destinatario.setNome("Destinatário de teste");
         destinatario.setTipoPessoa(tipoPessoa);
         destinatario.setRegimeTributacao(regime);
+        destinatario.setDocumentos(List.of(new Documento(
+                tipoPessoa == TipoPessoa.FISICA ? "12345678901" : "12345678000199",
+                tipoPessoa == TipoPessoa.FISICA ? TipoDocumento.CPF : TipoDocumento.CNPJ)));
         destinatario.setEnderecos(List.of(Endereco.builder()
                 .finalidade(Finalidade.ENTREGA)
                 .regiao(regiao)
                 .build()));
 
         Pedido pedido = new Pedido();
+        pedido.setIdPedido(1);
+        pedido.setData(LocalDate.of(2026, 8, 14));
         pedido.setValorTotalItens(BigDecimal.valueOf(valorTotalItens));
         pedido.setValorFrete(BigDecimal.ZERO);
         pedido.setItens(itens);
@@ -159,6 +169,8 @@ class GerarNotaFiscalUseCaseImplTest {
 
     private static Item item(double valorUnitario, int quantidade) {
         Item item = new Item();
+        item.setIdItem("item-1");
+        item.setDescricao("Produto de teste");
         item.setValorUnitario(BigDecimal.valueOf(valorUnitario));
         item.setQuantidade(quantidade);
         return item;
@@ -182,6 +194,7 @@ class GerarNotaFiscalUseCaseImplTest {
         return new GerarNotaFiscalUseCaseImpl(
                 calculadoraTributos,
                 calculadoraFrete,
-                (notaFiscal, contexto) -> { });
+                (notaFiscal, contexto) -> { },
+                new PedidoValidator());
     }
 }
