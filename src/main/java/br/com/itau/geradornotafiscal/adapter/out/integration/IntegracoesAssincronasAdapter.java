@@ -4,6 +4,7 @@ import br.com.itau.geradornotafiscal.core.model.NotaFiscal;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.observability.CorrelationIdContext;
 import br.com.itau.geradornotafiscal.observability.EtapaTemporizada;
+import br.com.itau.geradornotafiscal.observability.EtapaFluxo;
 import br.com.itau.geradornotafiscal.port.out.EntregaIntegrationPort;
 import br.com.itau.geradornotafiscal.port.out.EstoqueIntegrationPort;
 import br.com.itau.geradornotafiscal.port.out.FinanceiroIntegrationPort;
@@ -45,28 +46,28 @@ public class IntegracoesAssincronasAdapter implements PublicarIntegracoesNotaFis
                         () -> CorrelationIdContext.executar(contexto, () -> processarEmParalelo(notaFiscal, contexto)),
                         executor)
                 .exceptionally(exception -> {
-                    LOGGER.error("integrations.completed status=error notaFiscal={} correlationId={}",
+                    LOGGER.error("O processamento assíncrono das integrações falhou. event=integrations.completed status=error notaFiscal={} correlationId={}",
                             notaFiscal.getIdNotaFiscal(), contexto.correlationId(), exception);
                     return null;
                 });
     }
 
     private void processarEmParalelo(NotaFiscal notaFiscal, ContextoExecucao contexto) {
-        EtapaTemporizada.executar(LOGGER, "integrations.total", contexto, () -> {
-            CompletableFuture<Void> baixaEstoque = executar(contexto, "integration.estoque",
+        EtapaTemporizada.executar(LOGGER, EtapaFluxo.PROCESSAMENTO_INTEGRACOES, contexto, () -> {
+            CompletableFuture<Void> baixaEstoque = executar(contexto, EtapaFluxo.BAIXA_ESTOQUE,
                     () -> estoque.baixarEstoque(notaFiscal, contexto));
-            CompletableFuture<Void> registroNota = executar(contexto, "integration.registro",
+            CompletableFuture<Void> registroNota = executar(contexto, EtapaFluxo.REGISTRO_NOTA,
                     () -> registro.registrar(notaFiscal, contexto));
-            CompletableFuture<Void> agendaEntrega = executar(contexto, "integration.entrega",
+            CompletableFuture<Void> agendaEntrega = executar(contexto, EtapaFluxo.AGENDAMENTO_ENTREGA,
                     () -> entrega.agendarEntrega(notaFiscal, contexto));
-            CompletableFuture<Void> contasAReceber = executar(contexto, "integration.financeiro",
+            CompletableFuture<Void> contasAReceber = executar(contexto, EtapaFluxo.CONTAS_A_RECEBER,
                     () -> financeiro.enviarContasAReceber(notaFiscal, contexto));
 
             CompletableFuture.allOf(baixaEstoque, registroNota, agendaEntrega, contasAReceber).join();
         });
     }
 
-    private CompletableFuture<Void> executar(ContextoExecucao contexto, String etapa, Runnable integracao) {
+    private CompletableFuture<Void> executar(ContextoExecucao contexto, EtapaFluxo etapa, Runnable integracao) {
         return CompletableFuture.runAsync(
                 () -> CorrelationIdContext.executar(
                         contexto,

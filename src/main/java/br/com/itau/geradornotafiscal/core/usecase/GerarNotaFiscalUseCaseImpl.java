@@ -7,6 +7,7 @@ import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.observability.CorrelationIdContext;
 import br.com.itau.geradornotafiscal.observability.EtapaTemporizada;
+import br.com.itau.geradornotafiscal.observability.EtapaFluxo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,16 +35,16 @@ public class GerarNotaFiscalUseCaseImpl implements GerarNotaFiscalUseCase {
 	@Override
 	public NotaFiscal gerarNotaFiscal(Pedido pedido, ContextoExecucao contexto) {
 		return CorrelationIdContext.executar(contexto,
-				() -> EtapaTemporizada.executar(LOGGER, "nota-fiscal.total", contexto, () -> {
+				() -> EtapaTemporizada.executar(LOGGER, EtapaFluxo.GERACAO_NOTA_FISCAL, contexto, () -> {
 			List<ItemNotaFiscal> itens = EtapaTemporizada.executar(
-					LOGGER, "calculo.tributos", contexto, () -> calculadoraTributos.calcular(pedido));
+					LOGGER, EtapaFluxo.CALCULO_TRIBUTOS, contexto, () -> calculadoraTributos.calcular(pedido));
 			BigDecimal totalItens = EtapaTemporizada.executar(
-					LOGGER, "calculo.total-itens", contexto, () -> somarValorItemsComTributos(itens));
+					LOGGER, EtapaFluxo.SOMA_TOTAL_ITENS, contexto, () -> somarValorItemsComTributos(itens));
 			BigDecimal frete = EtapaTemporizada.executar(
-					LOGGER, "calculo.frete", contexto, () -> calculadoraFrete.calcular(pedido));
+					LOGGER, EtapaFluxo.CALCULO_FRETE, contexto, () -> calculadoraFrete.calcular(pedido));
 
 			NotaFiscal notaFiscal = EtapaTemporizada.executar(
-					LOGGER, "montagem.nota-fiscal", contexto, () -> NotaFiscal.builder()
+					LOGGER, EtapaFluxo.MONTAGEM_NOTA_FISCAL, contexto, () -> NotaFiscal.builder()
 							.idNotaFiscal(UUID.randomUUID().toString())
 							.data(LocalDateTime.now())
 							.valorTotalItens(totalItens)
@@ -52,7 +53,7 @@ public class GerarNotaFiscalUseCaseImpl implements GerarNotaFiscalUseCase {
 							.destinatario(pedido.getDestinatario())
 							.build());
 
-			EtapaTemporizada.executar(LOGGER, "publicacao.integracoes", contexto,
+			EtapaTemporizada.executar(LOGGER, EtapaFluxo.PUBLICACAO_INTEGRACOES, contexto,
 					() -> integracoesNotaFiscal.publicar(notaFiscal, contexto));
 			return notaFiscal;
 		}));
