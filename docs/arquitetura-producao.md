@@ -2,31 +2,9 @@
 
 ## Visão geral
 
-```mermaid
-flowchart LR
-    Cliente[Cliente] --> WAF[AWS WAF]
-    WAF --> APIGW[API Gateway]
-    APIGW --> AUTH[Cognito / OIDC]
-    APIGW --> ALB[ALB privado]
-    subgraph VPC[VPC - duas ou mais AZs]
-      subgraph APP[Sub-redes privadas]
-        ECS[ECS Fargate - Nota Fiscal]
-        RDS[(Aurora PostgreSQL - notas + outbox)]
-      end
-      ECS --> RDS
-      ECS --> VPCE[VPC Endpoints]
-    end
-    ECS --> SQS[SQS integrações]
-    SQS --> WORKERS[Workers ECS/Lambda]
-    WORKERS --> EST[API Estoque]
-    WORKERS --> REG[API Registro]
-    WORKERS --> ENT[API Entrega]
-    WORKERS --> FIN[API Financeiro]
-    SQS --> DLQ[DLQ]
-    ECS --> OBS[CloudWatch + X-Ray/OpenTelemetry]
-    WORKERS --> OBS
-    SECRETS[Secrets Manager] --> ECS
-```
+![Diagrama da arquitetura proposta para produção](./arquitetura-producao.svg)
+
+Fonte editável: [diagrama Draw.io](./desenho%20de%20arquitetura%20case-nota-fiscal.drawio).
 
 ## Fluxo produtivo recomendado
 
