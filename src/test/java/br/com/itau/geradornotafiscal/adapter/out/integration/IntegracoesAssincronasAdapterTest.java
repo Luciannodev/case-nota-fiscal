@@ -1,7 +1,7 @@
 package br.com.itau.geradornotafiscal.adapter.out.integration;
 
-import br.com.itau.geradornotafiscal.model.ItemNotaFiscal;
-import br.com.itau.geradornotafiscal.model.NotaFiscal;
+import br.com.itau.geradornotafiscal.core.model.ItemNotaFiscal;
+import br.com.itau.geradornotafiscal.core.model.NotaFiscal;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package br.com.itau.geradornotafiscal.adapter.out.integration;
 
-import br.com.itau.geradornotafiscal.model.NotaFiscal;
+import br.com.itau.geradornotafiscal.core.model.NotaFiscal;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.observability.CorrelationIdContext;
 import br.com.itau.geradornotafiscal.observability.EtapaTemporizada;
