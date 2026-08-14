@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.math.BigDecimal;
 
 @Service
 public class CalculadoraFrete {
@@ -21,7 +22,7 @@ public class CalculadoraFrete {
         strategies.forEach(strategy -> this.strategies.put(strategy.regiao(), strategy));
     }
 
-    public double calcular(Pedido pedido) {
+    public BigDecimal calcular(Pedido pedido) {
         Regiao regiaoEntrega = pedido.getDestinatario().getEnderecos().stream()
                 .filter(this::enderecoDeEntrega)
                 .map(Endereco::getRegiao)

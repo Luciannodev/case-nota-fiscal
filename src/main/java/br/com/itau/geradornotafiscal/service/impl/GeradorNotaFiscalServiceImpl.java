@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
@@ -38,9 +40,9 @@ public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
 				() -> EtapaTemporizada.executar(LOGGER, "nota-fiscal.total", contexto, () -> {
 			List<ItemNotaFiscal> itens = EtapaTemporizada.executar(
 					LOGGER, "calculo.tributos", contexto, () -> calculadoraTributos.calcular(pedido));
-			double totalItens = EtapaTemporizada.executar(
+			BigDecimal totalItens = EtapaTemporizada.executar(
 					LOGGER, "calculo.total-itens", contexto, () -> somarValorItemsComTributos(itens));
-			double frete = EtapaTemporizada.executar(
+			BigDecimal frete = EtapaTemporizada.executar(
 					LOGGER, "calculo.frete", contexto, () -> calculadoraFrete.calcular(pedido));
 
 			NotaFiscal notaFiscal = EtapaTemporizada.executar(
@@ -59,8 +61,12 @@ public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
 		}));
 	}
 
-	private double somarValorItemsComTributos(List<ItemNotaFiscal> itemNotaFiscalList) {
-        return itemNotaFiscalList.stream().
-                mapToDouble(itemNotaFiscal -> itemNotaFiscal.getQuantidade() * (itemNotaFiscal.getValorUnitario() + itemNotaFiscal.getValorTributoItem())).sum();
+	private BigDecimal somarValorItemsComTributos(List<ItemNotaFiscal> itemNotaFiscalList) {
+        return itemNotaFiscalList.stream()
+                .map(item -> item.getValorUnitario()
+                        .add(item.getValorTributoItem())
+                        .multiply(BigDecimal.valueOf(item.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
 	}
 }

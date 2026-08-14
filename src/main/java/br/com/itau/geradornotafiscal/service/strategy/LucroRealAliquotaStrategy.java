@@ -5,6 +5,7 @@ import br.com.itau.geradornotafiscal.model.Destinatario;
 import br.com.itau.geradornotafiscal.model.RegimeTributacaoPJ;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
 import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
 
 @Component
 public class LucroRealAliquotaStrategy implements AliquotaTributariaStrategy {
@@ -22,14 +23,14 @@ public class LucroRealAliquotaStrategy implements AliquotaTributariaStrategy {
     }
 
     @Override
-    public double calcularAliquota(double valorTotalItens) {
-        if (valorTotalItens < 1_000) {
+    public BigDecimal calcularAliquota(BigDecimal valorTotalItens) {
+        if (valorTotalItens.compareTo(BigDecimal.valueOf(1_000)) < 0) {
             return taxas.getFaixa1();
         }
-        if (valorTotalItens <= 2_000) {
+        if (valorTotalItens.compareTo(BigDecimal.valueOf(2_000)) <= 0) {
             return taxas.getFaixa2();
         }
-        if (valorTotalItens <= 5_000) {
+        if (valorTotalItens.compareTo(BigDecimal.valueOf(5_000)) <= 0) {
             return taxas.getFaixa3();
         }
         return taxas.getFaixa4();

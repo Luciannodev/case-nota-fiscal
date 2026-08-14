@@ -3,6 +3,8 @@ package br.com.itau.geradornotafiscal.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,12 +18,14 @@ public class ItemNotaFiscal {
     private String descricao;
 
     @JsonProperty("valor_unitario")
-    private double valorUnitario;
+    @Builder.Default
+    private BigDecimal valorUnitario = BigDecimal.ZERO;
 
     @JsonProperty("quantidade")
     private int quantidade;
 
     @JsonProperty("valor_tributo_item")
-    private double valorTributoItem;
+    @Builder.Default
+    private BigDecimal valorTributoItem = BigDecimal.ZERO;
 
 }

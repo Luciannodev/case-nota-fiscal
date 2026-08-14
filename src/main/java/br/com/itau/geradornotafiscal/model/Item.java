@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -18,7 +20,7 @@ public class Item {
 	    private String descricao;
 
 	    @JsonProperty("valor_unitario")
-	    private double valorUnitario;
+	    private BigDecimal valorUnitario = BigDecimal.ZERO;
 
 	    @JsonProperty("quantidade")
 	    private int quantidade;

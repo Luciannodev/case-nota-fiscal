@@ -6,6 +6,7 @@ import br.com.itau.geradornotafiscal.service.strategy.AliquotaTributariaStrategy
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 public class CalculadoraTributos {
@@ -25,7 +26,7 @@ public class CalculadoraTributos {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Não existe regra tributária para o destinatário informado"));
 
-        double aliquota = strategy.calcularAliquota(pedido.getValorTotalItens());
+        BigDecimal aliquota = strategy.calcularAliquota(pedido.getValorTotalItens());
         return calculadoraAliquotaProduto.calcularAliquota(pedido.getItens(), aliquota);
     }
 }

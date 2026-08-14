@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.math.BigDecimal;
 
 @Getter
 @Component
@@ -33,7 +34,7 @@ public class TaxasProperties implements InitializingBean {
                 "sudeste", frete.sudeste,
                 "sul", frete.sul
         ).forEach((nome, valor) -> {
-            if (!Double.isFinite(valor) || valor <= 0) {
+            if (valor == null || valor.signum() <= 0) {
                 throw new IllegalStateException("Multiplicador de frete inválido: " + nome);
             }
         });
@@ -46,7 +47,7 @@ public class TaxasProperties implements InitializingBean {
                 "faixa3", faixas.faixa3,
                 "faixa4", faixas.faixa4
         ).forEach((faixa, valor) -> {
-            if (!Double.isFinite(valor) || valor < 0 || valor > 1) {
+            if (valor == null || valor.signum() < 0 || valor.compareTo(BigDecimal.ONE) > 0) {
                 throw new IllegalStateException("Alíquota inválida: " + nome + "." + faixa);
             }
         });
@@ -55,19 +56,19 @@ public class TaxasProperties implements InitializingBean {
     @Getter
     @Setter
     public static class Faixas {
-        private double faixa1;
-        private double faixa2;
-        private double faixa3;
-        private double faixa4;
+        private BigDecimal faixa1;
+        private BigDecimal faixa2;
+        private BigDecimal faixa3;
+        private BigDecimal faixa4;
     }
 
     @Getter
     @Setter
     public static class Frete {
-        private double norte;
-        private double nordeste;
-        private double centroOeste;
-        private double sudeste;
-        private double sul;
+        private BigDecimal norte;
+        private BigDecimal nordeste;
+        private BigDecimal centroOeste;
+        private BigDecimal sudeste;
+        private BigDecimal sul;
     }
 }
