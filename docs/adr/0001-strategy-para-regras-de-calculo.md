@@ -11,6 +11,8 @@ O fluxo de geração da nota concentrava seleção de alíquota, faixas tributá
 
 Cada tipo/regime tributário implementa `AliquotaTributariaStrategy`. Cada região implementa `FreteStrategy`. `CalculadoraTributos` e `CalculadoraFrete` selecionam a estratégia compatível e o serviço principal apenas orquestra o resultado.
 
+Os percentuais não pertencem ao código das Strategies: são configuração externa conforme o [ADR 0006](0006-configuracao-externa-das-taxas.md).
+
 O contrato HTTP continua usando `double` para manter compatibilidade. Os valores esperados são protegidos por testes de negócio com resultados explícitos. Uma migração futura para `BigDecimal` deve ser feita no domínio sem alterar o payload.
 
 Regimes e endereços sem regra deixam de produzir silenciosamente total ou frete zero e passam a gerar erro explícito.
