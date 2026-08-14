@@ -18,6 +18,7 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService{
 		Destinatario destinatario = pedido.getDestinatario();
 		TipoPessoa tipoPessoa = destinatario.getTipoPessoa();
 		List<ItemNotaFiscal> itemNotaFiscalList = new ArrayList<>();
+		double valorTotalItensComTributos = 0;
 
 
 		CalculadoraAliquotaProduto calculadoraAliquotaProduto = new CalculadoraAliquotaProduto();
@@ -85,6 +86,9 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService{
 				itemNotaFiscalList = calculadoraAliquotaProduto.calcularAliquota(pedido.getItens(),aliquota);
 			}
 		}
+		// soma valores items com tributos
+		valorTotalItensComTributos = somarValorItemsComTributos(itemNotaFiscalList);
+
 		//Regras diferentes para frete
 
 		Regiao regiao = destinatario.getEnderecos().stream()
@@ -114,7 +118,7 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService{
 		NotaFiscal notaFiscal = NotaFiscal.builder()
 				.idNotaFiscal(idNotaFiscal)
 				.data(LocalDateTime.now())
-				.valorTotalItens(pedido.getValorTotalItens())
+				.valorTotalItens(valorTotalItensComTributos)
 				.valorFrete(valorFreteComPercentual)
 				.itens(itemNotaFiscalList)
 				.destinatario(pedido.getDestinatario())
@@ -126,5 +130,10 @@ public class GeradorNotaFiscalServiceImpl implements GeradorNotaFiscalService{
 		new FinanceiroService().enviarNotaFiscalParaContasReceber(notaFiscal);
 
 		return notaFiscal;
+	}
+
+	private double somarValorItemsComTributos(List<ItemNotaFiscal> itemNotaFiscalList) {
+        return itemNotaFiscalList.stream().
+                mapToDouble(itemNotaFiscal -> itemNotaFiscal.getQuantidade() * (itemNotaFiscal.getValorUnitario() + itemNotaFiscal.getValorTributoItem())).sum();
 	}
 }

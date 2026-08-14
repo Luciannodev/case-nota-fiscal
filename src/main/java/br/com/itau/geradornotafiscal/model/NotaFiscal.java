@@ -26,6 +26,7 @@ public class NotaFiscal {
 
     @JsonProperty("itens")
     private List<ItemNotaFiscal> itens;
+
     @JsonProperty("destinatario")
     private Destinatario destinatario;
 
