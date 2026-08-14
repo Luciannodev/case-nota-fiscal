@@ -168,6 +168,12 @@ class GeradorNotaFiscalServiceImplTest {
                 new CentroOesteFreteStrategy(),
                 new SudesteFreteStrategy(),
                 new SulFreteStrategy()));
-        return new GeradorNotaFiscalServiceImpl(calculadoraTributos, calculadoraFrete);
+        return new GeradorNotaFiscalServiceImpl(
+                calculadoraTributos,
+                calculadoraFrete,
+                notaFiscal -> { },
+                notaFiscal -> { },
+                notaFiscal -> { },
+                notaFiscal -> { });
     }
 }
