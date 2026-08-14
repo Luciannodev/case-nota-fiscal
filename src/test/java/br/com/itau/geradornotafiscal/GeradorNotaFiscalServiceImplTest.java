@@ -14,6 +14,7 @@ import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
 import br.com.itau.geradornotafiscal.service.impl.GeradorNotaFiscalServiceImpl;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
+import br.com.itau.geradornotafiscal.config.TaxasProperties;
 import br.com.itau.geradornotafiscal.service.strategy.CentroOesteFreteStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.LucroPresumidoAliquotaStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.LucroRealAliquotaStrategy;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static br.com.itau.geradornotafiscal.support.TaxasTestFactory.taxasPadrao;
 
 class GeradorNotaFiscalServiceImplTest {
 
@@ -158,19 +160,20 @@ class GeradorNotaFiscalServiceImplTest {
     }
 
     private static GeradorNotaFiscalServiceImpl criarGeradorNotaFiscalService() {
+        TaxasProperties taxas = taxasPadrao();
         CalculadoraTributos calculadoraTributos = new CalculadoraTributos(
                 List.of(
-                        new PessoaFisicaAliquotaStrategy(),
-                        new SimplesNacionalAliquotaStrategy(),
-                        new LucroRealAliquotaStrategy(),
-                        new LucroPresumidoAliquotaStrategy()),
+                        new PessoaFisicaAliquotaStrategy(taxas),
+                        new SimplesNacionalAliquotaStrategy(taxas),
+                        new LucroRealAliquotaStrategy(taxas),
+                        new LucroPresumidoAliquotaStrategy(taxas)),
                 new CalculadoraAliquotaProduto());
         CalculadoraFrete calculadoraFrete = new CalculadoraFrete(List.of(
-                new NorteFreteStrategy(),
-                new NordesteFreteStrategy(),
-                new CentroOesteFreteStrategy(),
-                new SudesteFreteStrategy(),
-                new SulFreteStrategy()));
+                new NorteFreteStrategy(taxas),
+                new NordesteFreteStrategy(taxas),
+                new CentroOesteFreteStrategy(taxas),
+                new SudesteFreteStrategy(taxas),
+                new SulFreteStrategy(taxas)));
         return new GeradorNotaFiscalServiceImpl(
                 calculadoraTributos,
                 calculadoraFrete,

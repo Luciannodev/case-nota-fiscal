@@ -141,5 +141,6 @@ O principal objetivo é demonstrar **como você pensa, investiga problemas, toma
 - logs temporizados por request, cálculo e chamada externa;
 - testes de regras, arquitetura, concorrência e propagação de contexto;
 - CI com Java 21 e Maven Wrapper.
+- taxas tributárias e de frete configuráveis por variáveis de ambiente, com validação no startup.
 
 Consulte os [ADRs](docs/adr/README.md) e a [arquitetura proposta para produção](docs/arquitetura-producao.md) para decisões, trade-offs, AWS, segurança, resiliência, observabilidade, deploy e rollback.

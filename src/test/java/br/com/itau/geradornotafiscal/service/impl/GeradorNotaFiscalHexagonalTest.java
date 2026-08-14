@@ -7,6 +7,7 @@ import br.com.itau.geradornotafiscal.model.Item;
 import br.com.itau.geradornotafiscal.model.Pedido;
 import br.com.itau.geradornotafiscal.model.Regiao;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
+import br.com.itau.geradornotafiscal.config.TaxasProperties;
 import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
@@ -22,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static br.com.itau.geradornotafiscal.support.TaxasTestFactory.taxasPadrao;
 
 class GeradorNotaFiscalHexagonalTest {
 
@@ -30,9 +32,10 @@ class GeradorNotaFiscalHexagonalTest {
     @Test
     void devePublicarNotaGeradaPelaPortaDeSaida() {
         PublicarIntegracoesNotaFiscalPort publicador = mock(PublicarIntegracoesNotaFiscalPort.class);
+        TaxasProperties taxas = taxasPadrao();
         GeradorNotaFiscalServiceImpl service = new GeradorNotaFiscalServiceImpl(
-                new CalculadoraTributos(List.of(new PessoaFisicaAliquotaStrategy()), new CalculadoraAliquotaProduto()),
-                new CalculadoraFrete(List.of(new SudesteFreteStrategy())),
+                new CalculadoraTributos(List.of(new PessoaFisicaAliquotaStrategy(taxas)), new CalculadoraAliquotaProduto()),
+                new CalculadoraFrete(List.of(new SudesteFreteStrategy(taxas))),
                 publicador);
 
         service.gerarNotaFiscal(pedido(), CONTEXTO);

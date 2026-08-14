@@ -6,6 +6,7 @@ import br.com.itau.geradornotafiscal.model.ItemNotaFiscal;
 import br.com.itau.geradornotafiscal.model.Pedido;
 import br.com.itau.geradornotafiscal.model.RegimeTributacaoPJ;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
+import br.com.itau.geradornotafiscal.config.TaxasProperties;
 import br.com.itau.geradornotafiscal.service.strategy.LucroPresumidoAliquotaStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.LucroRealAliquotaStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.PessoaFisicaAliquotaStrategy;
@@ -16,15 +17,18 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static br.com.itau.geradornotafiscal.support.TaxasTestFactory.taxasPadrao;
 
 class CalculadoraTributosTest {
 
+    private static final TaxasProperties TAXAS = taxasPadrao();
+
     private final CalculadoraTributos calculadora = new CalculadoraTributos(
             List.of(
-                    new PessoaFisicaAliquotaStrategy(),
-                    new SimplesNacionalAliquotaStrategy(),
-                    new LucroRealAliquotaStrategy(),
-                    new LucroPresumidoAliquotaStrategy()),
+                    new PessoaFisicaAliquotaStrategy(TAXAS),
+                    new SimplesNacionalAliquotaStrategy(TAXAS),
+                    new LucroRealAliquotaStrategy(TAXAS),
+                    new LucroPresumidoAliquotaStrategy(TAXAS)),
             new CalculadoraAliquotaProduto());
 
     @Test
