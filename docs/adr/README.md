@@ -7,5 +7,6 @@
 - [ADR 0005 — Arquitetura produtiva e ciclo de entrega](0005-arquitetura-produtiva-e-entrega.md)
 - [ADR 0006 — Configuração externa das taxas](0006-configuracao-externa-das-taxas.md)
 - [ADR 0007 — BigDecimal para valores financeiros](0007-bigdecimal-para-valores-financeiros.md)
+- [ADR 0008 — Core orientado a casos de uso](0008-core-orientado-a-casos-de-uso.md)
 
 Os ADRs aceitos descrevem decisões implementadas. O ADR proposto descreve a evolução necessária para produção e não deve ser interpretado como infraestrutura já provisionada.

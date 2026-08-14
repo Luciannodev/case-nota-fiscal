@@ -1,8 +1,8 @@
 package br.com.itau.geradornotafiscal;
 
-import br.com.itau.geradornotafiscal.model.Item;
-import br.com.itau.geradornotafiscal.model.ItemNotaFiscal;
-import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
+import br.com.itau.geradornotafiscal.core.model.Item;
+import br.com.itau.geradornotafiscal.core.model.ItemNotaFiscal;
+import br.com.itau.geradornotafiscal.core.usecase.calculo.CalculadoraAliquotaProduto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

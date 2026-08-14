@@ -1,6 +1,7 @@
 package br.com.itau.geradornotafiscal.support;
 
 import br.com.itau.geradornotafiscal.config.TaxasProperties;
+import br.com.itau.geradornotafiscal.core.strategy.FaixasAliquota;
 import java.math.BigDecimal;
 
 public final class TaxasTestFactory {
@@ -20,6 +21,11 @@ public final class TaxasTestFactory {
         properties.getFrete().setSudeste(new BigDecimal("1.048"));
         properties.getFrete().setSul(new BigDecimal("1.06"));
         return properties;
+    }
+
+    public static FaixasAliquota faixas(TaxasProperties.Faixas taxas) {
+        return new FaixasAliquota(
+                taxas.getFaixa1(), taxas.getFaixa2(), taxas.getFaixa3(), taxas.getFaixa4());
     }
 
     private static void configurar(TaxasProperties.Faixas faixas, String faixa1, String faixa2,

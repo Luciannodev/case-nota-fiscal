@@ -1,6 +1,6 @@
 package br.com.itau.geradornotafiscal.adapter.out.integration;
 
-import br.com.itau.geradornotafiscal.model.NotaFiscal;
+import br.com.itau.geradornotafiscal.core.model.NotaFiscal;
 import br.com.itau.geradornotafiscal.port.out.EstoqueIntegrationPort;
 import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import org.springframework.stereotype.Component;
