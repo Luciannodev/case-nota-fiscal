@@ -129,3 +129,17 @@ Uma entrega de alta qualidade deve considerar o **ciclo completo de desenvolvime
 A profundidade aplicada em cada aspecto fica a critério do candidato.
 
 O principal objetivo é demonstrar **como você pensa, investiga problemas, toma decisões técnicas e estrutura uma solução sustentável para produção**.
+
+---
+
+## Solução implementada
+
+- regras tributárias e frete isolados com Strategy;
+- portas e adapters para desacoplar o caso de uso das integrações;
+- integrações assíncronas e paralelas em virtual threads, preservando as latências simuladas;
+- `X-Correlation-ID` propagado do request às integrações;
+- logs temporizados por request, cálculo e chamada externa;
+- testes de regras, arquitetura, concorrência e propagação de contexto;
+- CI com Java 21 e Maven Wrapper.
+
+Consulte os [ADRs](docs/adr/README.md) e a [arquitetura proposta para produção](docs/arquitetura-producao.md) para decisões, trade-offs, AWS, segurança, resiliência, observabilidade, deploy e rollback.
