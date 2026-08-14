@@ -14,7 +14,8 @@ Não era possível reconstruir o fluxo de uma requisição nem identificar qual 
 - armazená-lo no MDC durante o request;
 - passá-lo explicitamente em `ContextoExecucao` pelo caso de uso e por todas as portas de saída;
 - restaurar o MDC dentro de cada virtual thread;
-- registrar logs `key=value` no início e fim de cada request, etapa de cálculo e integração, incluindo `status` e `durationMs`.
+- registrar no início e fim de cada request, cálculo e integração uma mensagem descritiva em português, como “Calculando os tributos de cada item”;
+- preservar na mesma mensagem os campos estruturados `event`, `step`, `status`, `durationMs` e `correlationId`.
 
 O contexto é explícito nas portas porque depender somente do MDC seria frágil em execução assíncrona e não garantiria a propagação futura no header das chamadas HTTP.
 
@@ -22,5 +23,6 @@ O contexto é explícito nas portas porque depender somente do MDC seria frágil
 
 - Uma nota pode ser rastreada do ingresso até estoque, registro, entrega e financeiro.
 - Gargalos ficam visíveis por etapa e integração.
+- Pessoas conseguem acompanhar o fluxo lendo as mensagens, enquanto ferramentas continuam filtrando e agregando os campos estruturados.
 - Logs não carregam conteúdo sensível do pedido ou documentos.
 - Em produção, os logs estruturados podem ser enviados para CloudWatch/OpenSearch e convertidos em métricas e alertas de latência/erro.

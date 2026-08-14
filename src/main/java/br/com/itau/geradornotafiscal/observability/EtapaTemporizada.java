@@ -10,22 +10,23 @@ public final class EtapaTemporizada {
     private EtapaTemporizada() {
     }
 
-    public static <T> T executar(Logger logger, String etapa, ContextoExecucao contexto, Supplier<T> acao) {
+    public static <T> T executar(Logger logger, EtapaFluxo etapa, ContextoExecucao contexto, Supplier<T> acao) {
         long inicio = System.nanoTime();
-        logger.info("step.started step={} correlationId={}", etapa, contexto.correlationId());
+        logger.info("Iniciando etapa: {}. event=step.started step={} correlationId={}",
+                etapa.descricao(), etapa.codigo(), contexto.correlationId());
         try {
             T resultado = acao.get();
-            logger.info("step.completed step={} status=success durationMs={} correlationId={}",
-                    etapa, duracaoMs(inicio), contexto.correlationId());
+            logger.info("Etapa concluída: {}. event=step.completed step={} status=success durationMs={} correlationId={}",
+                    etapa.descricao(), etapa.codigo(), duracaoMs(inicio), contexto.correlationId());
             return resultado;
         } catch (RuntimeException exception) {
-            logger.error("step.completed step={} status=error durationMs={} correlationId={}",
-                    etapa, duracaoMs(inicio), contexto.correlationId(), exception);
+            logger.error("Etapa falhou: {}. event=step.completed step={} status=error durationMs={} correlationId={}",
+                    etapa.descricao(), etapa.codigo(), duracaoMs(inicio), contexto.correlationId(), exception);
             throw exception;
         }
     }
 
-    public static void executar(Logger logger, String etapa, ContextoExecucao contexto, Runnable acao) {
+    public static void executar(Logger logger, EtapaFluxo etapa, ContextoExecucao contexto, Runnable acao) {
         executar(logger, etapa, contexto, () -> {
             acao.run();
             return null;

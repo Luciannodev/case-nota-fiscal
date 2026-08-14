@@ -29,13 +29,13 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
         long inicio = System.nanoTime();
         MDC.put(CorrelationIdContext.MDC_KEY, correlationId);
         response.setHeader(CorrelationIdContext.HEADER, correlationId);
-        LOGGER.info("request.started method={} path={} correlationId={}",
+        LOGGER.info("Recebendo requisição e iniciando o processamento. event=request.started method={} path={} correlationId={}",
                 request.getMethod(), request.getRequestURI(), correlationId);
         try {
             filterChain.doFilter(request, response);
         } finally {
             long durationMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - inicio);
-            LOGGER.info("request.completed method={} path={} status={} durationMs={} correlationId={}",
+            LOGGER.info("Requisição processada e resposta enviada. event=request.completed method={} path={} status={} durationMs={} correlationId={}",
                     request.getMethod(), request.getRequestURI(), response.getStatus(), durationMs, correlationId);
             MDC.remove(CorrelationIdContext.MDC_KEY);
         }
