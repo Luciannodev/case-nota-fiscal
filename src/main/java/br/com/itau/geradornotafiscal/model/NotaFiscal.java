@@ -1,6 +1,7 @@
 package br.com.itau.geradornotafiscal.model;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,10 +20,12 @@ public class NotaFiscal {
     private LocalDateTime data;
 
     @JsonProperty("valor_total_itens")
-    private double valorTotalItens;
+    @Builder.Default
+    private BigDecimal valorTotalItens = BigDecimal.ZERO;
 
     @JsonProperty("valor_frete")
-    private double valorFrete;
+    @Builder.Default
+    private BigDecimal valorFrete = BigDecimal.ZERO;
 
     @JsonProperty("itens")
     private List<ItemNotaFiscal> itens;

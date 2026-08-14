@@ -18,6 +18,7 @@ import br.com.itau.geradornotafiscal.service.strategy.SudesteFreteStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,9 +53,9 @@ class GeradorNotaFiscalHexagonalTest {
                         .build()))
                 .build();
         return Pedido.builder()
-                .valorTotalItens(100)
-                .valorFrete(10)
-                .itens(List.of(new Item("1", "Produto", 100, 1)))
+                .valorTotalItens(new BigDecimal("100.00"))
+                .valorFrete(new BigDecimal("10.00"))
+                .itens(List.of(new Item("1", "Produto", new BigDecimal("100.00"), 1)))
                 .destinatario(destinatario)
                 .build();
     }

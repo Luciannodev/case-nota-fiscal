@@ -31,8 +31,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 import java.util.stream.Stream;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static br.com.itau.geradornotafiscal.support.TaxasTestFactory.taxasPadrao;
 
 class GeradorNotaFiscalServiceImplTest {
@@ -49,8 +51,9 @@ class GeradorNotaFiscalServiceImplTest {
 
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
-        assertEquals(tributoEsperado, notaFiscal.getItens().getFirst().getValorTributoItem(), 0.001);
-        assertEquals(totalNotaEsperado, notaFiscal.getValorTotalItens(), 0.001);
+        assertThat(notaFiscal.getItens().getFirst().getValorTributoItem())
+                .isEqualByComparingTo(BigDecimal.valueOf(tributoEsperado));
+        assertThat(notaFiscal.getValorTotalItens()).isEqualByComparingTo(BigDecimal.valueOf(totalNotaEsperado));
     }
 
     @ParameterizedTest(name = "{0}: pedido de {1} gera tributo {2} e total {3}")
@@ -61,8 +64,9 @@ class GeradorNotaFiscalServiceImplTest {
 
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
-        assertEquals(tributoEsperado, notaFiscal.getItens().getFirst().getValorTributoItem(), 0.001);
-        assertEquals(totalNotaEsperado, notaFiscal.getValorTotalItens(), 0.001);
+        assertThat(notaFiscal.getItens().getFirst().getValorTributoItem())
+                .isEqualByComparingTo(BigDecimal.valueOf(tributoEsperado));
+        assertThat(notaFiscal.getValorTotalItens()).isEqualByComparingTo(BigDecimal.valueOf(totalNotaEsperado));
     }
 
     @Test
@@ -77,20 +81,20 @@ class GeradorNotaFiscalServiceImplTest {
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
         // (3 x (100 + 12)) + (2 x (200 + 24))
-        assertEquals(784, notaFiscal.getValorTotalItens(), 0.001);
-        assertEquals(12, notaFiscal.getItens().get(0).getValorTributoItem(), 0.001);
-        assertEquals(24, notaFiscal.getItens().get(1).getValorTributoItem(), 0.001);
+        assertEquals(new BigDecimal("784.00"), notaFiscal.getValorTotalItens());
+        assertEquals(new BigDecimal("12.00"), notaFiscal.getItens().get(0).getValorTributoItem());
+        assertEquals(new BigDecimal("24.00"), notaFiscal.getItens().get(1).getValorTributoItem());
     }
 
     @ParameterizedTest(name = "frete base de 100 para {0} resulta em {1}")
     @MethodSource("cenariosFrete")
     void deveCalcularValorFinalEsperadoDoFreteParaCadaRegiao(Regiao regiao, double valorFreteEsperado) {
         Pedido pedido = pedido(TipoPessoa.FISICA, null, 100, List.of(item(100, 1)), regiao);
-        pedido.setValorFrete(100);
+        pedido.setValorFrete(new BigDecimal("100.00"));
 
         NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
-        assertEquals(valorFreteEsperado, notaFiscal.getValorFrete(), 0.001);
+        assertThat(notaFiscal.getValorFrete()).isEqualByComparingTo(BigDecimal.valueOf(valorFreteEsperado));
     }
 
     private static Stream<Arguments> cenariosPessoaFisica() {
@@ -145,8 +149,8 @@ class GeradorNotaFiscalServiceImplTest {
                 .build()));
 
         Pedido pedido = new Pedido();
-        pedido.setValorTotalItens(valorTotalItens);
-        pedido.setValorFrete(0);
+        pedido.setValorTotalItens(BigDecimal.valueOf(valorTotalItens));
+        pedido.setValorFrete(BigDecimal.ZERO);
         pedido.setItens(itens);
         pedido.setDestinatario(destinatario);
         return pedido;
@@ -154,7 +158,7 @@ class GeradorNotaFiscalServiceImplTest {
 
     private static Item item(double valorUnitario, int quantidade) {
         Item item = new Item();
-        item.setValorUnitario(valorUnitario);
+        item.setValorUnitario(BigDecimal.valueOf(valorUnitario));
         item.setQuantidade(quantidade);
         return item;
     }

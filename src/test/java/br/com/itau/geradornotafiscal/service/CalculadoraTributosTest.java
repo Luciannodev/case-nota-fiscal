@@ -14,6 +14,7 @@ import br.com.itau.geradornotafiscal.service.strategy.SimplesNacionalAliquotaStr
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +38,7 @@ class CalculadoraTributosTest {
 
         List<ItemNotaFiscal> itens = calculadora.calcular(pedido);
 
-        assertEquals(950.19, itens.getFirst().getValorTributoItem(), 0.001);
+        assertEquals(new BigDecimal("950.19"), itens.getFirst().getValorTributoItem());
     }
 
     @Test
@@ -52,9 +53,10 @@ class CalculadoraTributosTest {
                 .tipoPessoa(tipoPessoa)
                 .regimeTributacao(regime)
                 .build();
-        Item item = new Item("1", "Produto", valor, 1);
+        BigDecimal valorMonetario = BigDecimal.valueOf(valor);
+        Item item = new Item("1", "Produto", valorMonetario, 1);
         return Pedido.builder()
-                .valorTotalItens(valor)
+                .valorTotalItens(valorMonetario)
                 .destinatario(destinatario)
                 .itens(List.of(item))
                 .build();
