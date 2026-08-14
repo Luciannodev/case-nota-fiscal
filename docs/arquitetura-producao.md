@@ -4,7 +4,7 @@
 
 ![Diagrama da arquitetura proposta para produção](./arquitetura-producao.svg)
 
-Fonte editável: [diagrama Draw.io](./desenho%20de%20arquitetura%20case-nota-fiscal.drawio).
+Fonte editável: [diagrama Draw.io](./arquitetura_aws_nota_fiscal_drawio.xml).
 
 ## Fluxo produtivo recomendado
 
