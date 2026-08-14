@@ -13,6 +13,7 @@ import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
 import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
 import br.com.itau.geradornotafiscal.service.impl.GeradorNotaFiscalServiceImpl;
+import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.service.strategy.CentroOesteFreteStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.LucroPresumidoAliquotaStrategy;
 import br.com.itau.geradornotafiscal.service.strategy.LucroRealAliquotaStrategy;
@@ -34,6 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GeradorNotaFiscalServiceImplTest {
 
+    private static final ContextoExecucao CONTEXTO = new ContextoExecucao("teste-correlation-id");
+
     private final GeradorNotaFiscalServiceImpl geradorNotaFiscalService = criarGeradorNotaFiscalService();
 
     @ParameterizedTest(name = "pessoa fisica: pedido de {0} gera tributo {1} e total {2}")
@@ -42,7 +45,7 @@ class GeradorNotaFiscalServiceImplTest {
             double valorTotalItens, double tributoEsperado, double totalNotaEsperado) {
         Pedido pedido = pedido(TipoPessoa.FISICA, null, valorTotalItens, List.of(item(valorTotalItens, 1)), Regiao.SUDESTE);
 
-        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
+        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
         assertEquals(tributoEsperado, notaFiscal.getItens().getFirst().getValorTributoItem(), 0.001);
         assertEquals(totalNotaEsperado, notaFiscal.getValorTotalItens(), 0.001);
@@ -54,7 +57,7 @@ class GeradorNotaFiscalServiceImplTest {
             RegimeTributacaoPJ regime, double valorTotalItens, double tributoEsperado, double totalNotaEsperado) {
         Pedido pedido = pedido(TipoPessoa.JURIDICA, regime, valorTotalItens, List.of(item(valorTotalItens, 1)), Regiao.SUDESTE);
 
-        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
+        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
         assertEquals(tributoEsperado, notaFiscal.getItens().getFirst().getValorTributoItem(), 0.001);
         assertEquals(totalNotaEsperado, notaFiscal.getValorTotalItens(), 0.001);
@@ -69,7 +72,7 @@ class GeradorNotaFiscalServiceImplTest {
                 List.of(item(100, 3), item(200, 2)),
                 Regiao.SUDESTE);
 
-        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
+        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
         // (3 x (100 + 12)) + (2 x (200 + 24))
         assertEquals(784, notaFiscal.getValorTotalItens(), 0.001);
@@ -83,7 +86,7 @@ class GeradorNotaFiscalServiceImplTest {
         Pedido pedido = pedido(TipoPessoa.FISICA, null, 100, List.of(item(100, 1)), regiao);
         pedido.setValorFrete(100);
 
-        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido);
+        NotaFiscal notaFiscal = geradorNotaFiscalService.gerarNotaFiscal(pedido, CONTEXTO);
 
         assertEquals(valorFreteEsperado, notaFiscal.getValorFrete(), 0.001);
     }
@@ -171,6 +174,6 @@ class GeradorNotaFiscalServiceImplTest {
         return new GeradorNotaFiscalServiceImpl(
                 calculadoraTributos,
                 calculadoraFrete,
-                notaFiscal -> { });
+                (notaFiscal, contexto) -> { });
     }
 }

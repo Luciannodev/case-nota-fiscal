@@ -8,6 +8,7 @@ import br.com.itau.geradornotafiscal.model.Pedido;
 import br.com.itau.geradornotafiscal.model.Regiao;
 import br.com.itau.geradornotafiscal.model.TipoPessoa;
 import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
+import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
 import br.com.itau.geradornotafiscal.service.CalculadoraAliquotaProduto;
 import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
@@ -18,10 +19,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class GeradorNotaFiscalHexagonalTest {
+
+    private static final ContextoExecucao CONTEXTO = new ContextoExecucao("corr-hexagonal");
 
     @Test
     void devePublicarNotaGeradaPelaPortaDeSaida() {
@@ -31,9 +35,9 @@ class GeradorNotaFiscalHexagonalTest {
                 new CalculadoraFrete(List.of(new SudesteFreteStrategy())),
                 publicador);
 
-        service.gerarNotaFiscal(pedido());
+        service.gerarNotaFiscal(pedido(), CONTEXTO);
 
-        verify(publicador).publicar(any());
+        verify(publicador).publicar(any(), eq(CONTEXTO));
     }
 
     private Pedido pedido() {
