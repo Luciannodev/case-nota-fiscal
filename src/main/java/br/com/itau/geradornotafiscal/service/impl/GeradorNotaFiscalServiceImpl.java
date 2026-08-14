@@ -5,6 +5,11 @@ import br.com.itau.geradornotafiscal.service.CalculadoraFrete;
 import br.com.itau.geradornotafiscal.service.CalculadoraTributos;
 import br.com.itau.geradornotafiscal.port.in.GerarNotaFiscalUseCase;
 import br.com.itau.geradornotafiscal.port.out.PublicarIntegracoesNotaFiscalPort;
+import br.com.itau.geradornotafiscal.observability.ContextoExecucao;
+import br.com.itau.geradornotafiscal.observability.CorrelationIdContext;
+import br.com.itau.geradornotafiscal.observability.EtapaTemporizada;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,6 +18,7 @@ import java.util.UUID;
 
 @Service
 public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GeradorNotaFiscalServiceImpl.class);
 
 	private final CalculadoraTributos calculadoraTributos;
 	private final CalculadoraFrete calculadoraFrete;
@@ -27,31 +33,30 @@ public class GeradorNotaFiscalServiceImpl implements GerarNotaFiscalUseCase {
 	}
 
 	@Override
-	public NotaFiscal gerarNotaFiscal(Pedido pedido) {
+	public NotaFiscal gerarNotaFiscal(Pedido pedido, ContextoExecucao contexto) {
+		return CorrelationIdContext.executar(contexto,
+				() -> EtapaTemporizada.executar(LOGGER, "nota-fiscal.total", contexto, () -> {
+			List<ItemNotaFiscal> itens = EtapaTemporizada.executar(
+					LOGGER, "calculo.tributos", contexto, () -> calculadoraTributos.calcular(pedido));
+			double totalItens = EtapaTemporizada.executar(
+					LOGGER, "calculo.total-itens", contexto, () -> somarValorItemsComTributos(itens));
+			double frete = EtapaTemporizada.executar(
+					LOGGER, "calculo.frete", contexto, () -> calculadoraFrete.calcular(pedido));
 
-		Destinatario destinatario = pedido.getDestinatario();
-		List<ItemNotaFiscal> itemNotaFiscalList = calculadoraTributos.calcular(pedido);
-		// soma valores items com tributos
-		double valorTotalItensComTributos = somarValorItemsComTributos(itemNotaFiscalList);
+			NotaFiscal notaFiscal = EtapaTemporizada.executar(
+					LOGGER, "montagem.nota-fiscal", contexto, () -> NotaFiscal.builder()
+							.idNotaFiscal(UUID.randomUUID().toString())
+							.data(LocalDateTime.now())
+							.valorTotalItens(totalItens)
+							.valorFrete(frete)
+							.itens(itens)
+							.destinatario(pedido.getDestinatario())
+							.build());
 
-		//Regras diferentes para frete
-		double valorFreteComPercentual = calculadoraFrete.calcular(pedido);
-
-		// Create the NotaFiscal object
-		String idNotaFiscal = UUID.randomUUID().toString();
-
-		NotaFiscal notaFiscal = NotaFiscal.builder()
-				.idNotaFiscal(idNotaFiscal)
-				.data(LocalDateTime.now())
-				.valorTotalItens(valorTotalItensComTributos)
-				.valorFrete(valorFreteComPercentual)
-				.itens(itemNotaFiscalList)
-				.destinatario(pedido.getDestinatario())
-				.build();
-
-		integracoesNotaFiscal.publicar(notaFiscal);
-
-		return notaFiscal;
+			EtapaTemporizada.executar(LOGGER, "publicacao.integracoes", contexto,
+					() -> integracoesNotaFiscal.publicar(notaFiscal, contexto));
+			return notaFiscal;
+		}));
 	}
 
 	private double somarValorItemsComTributos(List<ItemNotaFiscal> itemNotaFiscalList) {
