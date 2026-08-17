@@ -144,6 +144,27 @@ O principal objetivo é demonstrar **como você pensa, investiga problemas, toma
 - logs temporizados por request, cálculo e chamada externa;
 - testes de regras, arquitetura, concorrência e propagação de contexto;
 - CI com Java 21 e Maven Wrapper.
-- taxas tributárias e de frete configuráveis por variáveis de ambiente, com validação no startup.
+- taxas tributárias e de frete carregadas do AWS Parameter Store em produção, com configuração local, validação e fail-fast no startup.
 
 Consulte os [ADRs](docs/adr/README.md) e a [arquitetura proposta para produção](docs/arquitetura-producao.md) para decisões, trade-offs, AWS, segurança, resiliência, observabilidade, deploy e rollback.
+
+### Configuração das taxas
+
+O exemplo completo está em [`docs/parameter-store-taxas.json`](docs/parameter-store-taxas.json). Para publicá-lo em produção:
+
+```bash
+aws ssm put-parameter \
+  --name /case-nota-fiscal/prod/taxas \
+  --type String \
+  --value file://docs/parameter-store-taxas.json \
+  --overwrite
+```
+
+Na task da aplicação, configure:
+
+```text
+TAXAS_PARAMETER_STORE_ENABLED=true
+TAXAS_PARAMETER_STORE_NAME=/case-nota-fiscal/prod/taxas
+```
+
+A task role precisa de `ssm:GetParameter` somente nesse caminho. A leitura ocorre uma vez no startup; qualquer falha ou taxa inválida impede a aplicação de iniciar.

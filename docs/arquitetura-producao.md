@@ -22,6 +22,7 @@ O adapter assíncrono em memória deste repositório representa essa fronteira s
 - ALB, banco Multi-AZ, backups point-in-time e SQS gerenciada removem pontos únicos de falha.
 - Tasks em sub-redes privadas; acesso AWS por VPC endpoints e egress externo controlado.
 - IAM por workload com menor privilégio; segredos fora da imagem e rotação pelo Secrets Manager.
+- Taxas lidas uma vez no startup pelo Parameter Store; a task role possui `ssm:GetParameter` restrito ao caminho do ambiente.
 - TLS em trânsito e KMS em repouso; WAF, throttling e autenticação OIDC na borda.
 - Payloads e documentos não são registrados em logs.
 

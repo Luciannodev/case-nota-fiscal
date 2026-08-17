@@ -36,23 +36,23 @@ public class UseCaseConfig {
     }
 
     @Bean
-    CalculadoraTributos calculadoraTributos(TaxasProperties taxas,
+    CalculadoraTributos calculadoraTributos(TaxasConfig taxas,
                                             CalculadoraAliquotaProduto calculadoraAliquotaProduto) {
         return new CalculadoraTributos(List.of(
-                new PessoaFisicaAliquotaStrategy(faixas(taxas.getPf())),
-                new SimplesNacionalAliquotaStrategy(faixas(taxas.getSimplesNacional())),
-                new LucroRealAliquotaStrategy(faixas(taxas.getLucroReal())),
-                new LucroPresumidoAliquotaStrategy(faixas(taxas.getLucroPresumido()))), calculadoraAliquotaProduto);
+                new PessoaFisicaAliquotaStrategy(faixas(taxas.pf())),
+                new SimplesNacionalAliquotaStrategy(faixas(taxas.simplesNacional())),
+                new LucroRealAliquotaStrategy(faixas(taxas.lucroReal())),
+                new LucroPresumidoAliquotaStrategy(faixas(taxas.lucroPresumido()))), calculadoraAliquotaProduto);
     }
 
     @Bean
-    CalculadoraFrete calculadoraFrete(TaxasProperties taxas) {
+    CalculadoraFrete calculadoraFrete(TaxasConfig taxas) {
         return new CalculadoraFrete(List.of(
-                new NorteFreteStrategy(taxas.getFrete().getNorte()),
-                new NordesteFreteStrategy(taxas.getFrete().getNordeste()),
-                new CentroOesteFreteStrategy(taxas.getFrete().getCentroOeste()),
-                new SudesteFreteStrategy(taxas.getFrete().getSudeste()),
-                new SulFreteStrategy(taxas.getFrete().getSul())));
+                new NorteFreteStrategy(taxas.frete().norte()),
+                new NordesteFreteStrategy(taxas.frete().nordeste()),
+                new CentroOesteFreteStrategy(taxas.frete().centroOeste()),
+                new SudesteFreteStrategy(taxas.frete().sudeste()),
+                new SulFreteStrategy(taxas.frete().sul())));
     }
 
     @Bean
@@ -63,8 +63,8 @@ public class UseCaseConfig {
         return new GerarNotaFiscalUseCaseImpl(tributos, frete, integracoes, pedidoValidator);
     }
 
-    private FaixasAliquota faixas(TaxasProperties.Faixas taxas) {
+    private FaixasAliquota faixas(TaxasConfig.Faixas taxas) {
         return new FaixasAliquota(
-                taxas.getFaixa1(), taxas.getFaixa2(), taxas.getFaixa3(), taxas.getFaixa4());
+                taxas.faixa1(), taxas.faixa2(), taxas.faixa3(), taxas.faixa4());
     }
 }

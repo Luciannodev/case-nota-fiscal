@@ -1,0 +1,33 @@
+{
+  "pf": {
+    "faixa1": 0.00,
+    "faixa2": 0.12,
+    "faixa3": 0.15,
+    "faixa4": 0.17
+  },
+  "simplesNacional": {
+    "faixa1": 0.03,
+    "faixa2": 0.07,
+    "faixa3": 0.13,
+    "faixa4": 0.19
+  },
+  "lucroReal": {
+    "faixa1": 0.03,
+    "faixa2": 0.09,
+    "faixa3": 0.15,
+    "faixa4": 0.20
+  },
+  "lucroPresumido": {
+    "faixa1": 0.03,
+    "faixa2": 0.09,
+    "faixa3": 0.16,
+    "faixa4": 0.20
+  },
+  "frete": {
+    "norte": 1.08,
+    "nordeste": 1.085,
+    "centroOeste": 1.07,
+    "sudeste": 1.048,
+    "sul": 1.06
+  }
+}
