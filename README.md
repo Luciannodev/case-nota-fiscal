@@ -148,6 +148,12 @@ O principal objetivo é demonstrar **como você pensa, investiga problemas, toma
 
 Consulte os [ADRs](docs/adr/README.md) e a [arquitetura proposta para produção](docs/arquitetura-producao.md) para decisões, trade-offs, AWS, segurança, resiliência, observabilidade, deploy e rollback.
 
+### Arquitetura proposta para produção
+
+![Diagrama da arquitetura proposta para produção](docs/desenho-arquitetura-case-nota-fiscal.svg)
+
+Fonte editável: [abrir o diagrama no Draw.io](docs/desenho%20de%20arquitetura%20case-nota-fiscal.drawio).
+
 ### Configuração das taxas
 
 O exemplo completo está em [`docs/parameter-store-taxas.json`](docs/parameter-store-taxas.json). Para publicá-lo em produção:

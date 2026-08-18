@@ -2,9 +2,9 @@
 
 ## Visão geral
 
-![Diagrama da arquitetura proposta para produção](./arquitetura-producao.svg)
+![Diagrama da arquitetura proposta para produção](./desenho-arquitetura-case-nota-fiscal.svg)
 
-Fonte editável: [diagrama Draw.io](./arquitetura_producao.xml).
+Fonte editável: [diagrama Draw.io](./desenho%20de%20arquitetura%20case-nota-fiscal.drawio).
 
 ## Fluxo produtivo recomendado
 
